@@ -14,6 +14,8 @@
 - [x] MIT 적용 범위와 Gradle wrapper/dependency 고지 확인.
 - [x] [SUPPORTING_EVIDENCE](SUPPORTING_EVIDENCE.md)에 공개 코드·SQL·테스트 연결.
 - [x] 사용자 검수 후 2단계 진행 승인.
-- [ ] fresh Git history로 main branch 공개 후 GitHub Actions와 익명 접근 확인.
+- [x] fresh Git history로 main branch 공개 후 GitHub Actions와 익명 접근 확인.
 
 공개는 기존 이력 없이 만든 initial commit으로 진행합니다. 공개 후 [verify.yml](.github/workflows/verify.yml)의 두 job과 로그인하지 않은 접근을 확인합니다. 프로필 변경은 이 작업의 범위에 포함하지 않습니다.
+
+2026-10-01에 [최초 공개 commit의 Verify](https://github.com/codewus/auto-trading-backend-showcase/actions/runs/36799847071)가 성공했습니다. 인증 헤더와 쿠키 없이 repository, README, LICENSE, docs 및 내부 링크의 raw 파일 접근을 확인했습니다.
