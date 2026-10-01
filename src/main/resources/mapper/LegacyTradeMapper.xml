@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codewus.showcase.persistence.mapper.LegacyTradeMapper">
+  <insert id="insert">
+    INSERT INTO legacy_trade (actor_id, symbol, exchange_order_id, side, quantity, occurred_at)
+    VALUES (#{order.actorId}, #{order.symbol}, #{result.exchangeOrderId},
+            #{result.side}, #{result.quantity}, #{result.filledAt})
+    ON CONFLICT (actor_id, symbol, exchange_order_id) DO NOTHING
+  </insert>
+  <select id="findId" resultType="long">
+    SELECT id FROM legacy_trade
+    WHERE actor_id = #{actorId} AND symbol = #{symbol} AND exchange_order_id = #{exchangeOrderId}
+  </select>
+  <select id="history" resultType="com.codewus.showcase.order.model.HistoryEntry">
+    SELECT 'LEGACY' AS source, NULL::BIGINT AS order_id, id AS legacy_trade_id, actor_id,
+           symbol, exchange_order_id, side, quantity, occurred_at
+    FROM legacy_trade WHERE actor_id = #{actorId}
+  </select>
+</mapper>

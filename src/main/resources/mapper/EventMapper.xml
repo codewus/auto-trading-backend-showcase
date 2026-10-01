@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codewus.showcase.persistence.mapper.EventMapper">
+  <insert id="insert">
+    INSERT INTO event (fill_id, type) VALUES (#{fillId}, #{type})
+    ON CONFLICT (fill_id, type) DO NOTHING
+  </insert>
+  <select id="exists" resultType="boolean">
+    SELECT EXISTS (SELECT 1 FROM event WHERE fill_id = #{fillId} AND type = #{type})
+  </select>
+  <select id="count" resultType="int">
+    SELECT COUNT(*) FROM event WHERE fill_id = #{fillId}
+  </select>
+</mapper>

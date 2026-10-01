@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codewus.showcase.persistence.mapper.ApplicationMapper">
+  <insert id="ensureState">
+    INSERT INTO local_state (actor_id, symbol) VALUES (#{actorId}, #{symbol}) ON CONFLICT DO NOTHING
+  </insert>
+  <select id="lockState" resultType="com.codewus.showcase.order.model.LocalState">
+    SELECT * FROM local_state WHERE actor_id = #{actorId} AND symbol = #{symbol} FOR UPDATE
+  </select>
+  <select id="isApplied" resultType="boolean">
+    SELECT EXISTS (SELECT 1 FROM application_ledger WHERE fill_id = #{fillId})
+  </select>
+  <update id="updateState">
+    UPDATE local_state SET applied_quantity = applied_quantity +
+      CASE WHEN #{side} = 'BUY' THEN #{quantity} ELSE -#{quantity} END,
+      applied_fill_count = applied_fill_count + 1
+    WHERE actor_id = #{actorId} AND symbol = #{symbol}
+  </update>
+  <insert id="markApplied">
+    INSERT INTO application_ledger (fill_id) VALUES (#{fillId})
+  </insert>
+  <select id="state" resultType="com.codewus.showcase.order.model.LocalState">
+    SELECT * FROM local_state WHERE actor_id = #{actorId} AND symbol = #{symbol}
+  </select>
+</mapper>

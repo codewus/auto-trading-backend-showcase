@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codewus.showcase.persistence.mapper.OrderMapper">
+  <insert id="insertIntent">
+    INSERT INTO demo_order (actor_id, action_id, client_order_id, fingerprint, symbol, side, quantity, status)
+    VALUES (#{command.actorId}, #{command.actionId}, #{clientOrderId}, #{fingerprint},
+            #{command.symbol}, #{command.side}, #{command.quantity}, 'INTENDED')
+    ON CONFLICT DO NOTHING
+  </insert>
+  <select id="findAction" resultType="com.codewus.showcase.order.model.OrderIntent">
+    SELECT * FROM demo_order WHERE actor_id = #{actorId} AND action_id = #{actionId}
+  </select>
+  <select id="find" resultType="com.codewus.showcase.order.model.OrderIntent">
+    SELECT * FROM demo_order WHERE actor_id = #{actorId} AND id = #{id}
+  </select>
+  <select id="forActor" resultType="com.codewus.showcase.order.model.OrderIntent">
+    SELECT * FROM demo_order WHERE actor_id = #{actorId} ORDER BY id
+  </select>
+  <insert id="claim">
+    INSERT INTO submit_claim (order_id, client_order_id)
+    SELECT id, client_order_id FROM demo_order WHERE id = #{id} AND status != 'CONFIRMED'
+    ON CONFLICT DO NOTHING
+  </insert>
+  <update id="markUncertain">
+    UPDATE demo_order SET status = 'UNCERTAIN' WHERE id = #{id} AND status != 'CONFIRMED'
+  </update>
+  <update id="markConfirmed">
+    UPDATE demo_order SET status = 'CONFIRMED' WHERE id = #{id}
+  </update>
+</mapper>

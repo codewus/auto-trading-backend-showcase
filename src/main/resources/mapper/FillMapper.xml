@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.codewus.showcase.persistence.mapper.FillMapper">
+  <insert id="insert">
+    INSERT INTO fill (order_id, actor_id, symbol, exchange_order_id, side, quantity, legacy_trade_id, filled_at)
+    VALUES (#{order.id}, #{order.actorId}, #{order.symbol}, #{result.exchangeOrderId},
+            #{result.side}, #{result.quantity}, #{legacyTradeId}, #{result.filledAt})
+    ON CONFLICT DO NOTHING
+  </insert>
+  <select id="findByOrder" resultType="com.codewus.showcase.order.model.FillRecord">
+    SELECT * FROM fill WHERE order_id = #{orderId}
+  </select>
+  <select id="history" resultType="com.codewus.showcase.order.model.HistoryEntry">
+    SELECT 'NEW' AS source, o.id AS order_id, f.legacy_trade_id, o.actor_id, o.symbol,
+           f.exchange_order_id, f.side, f.quantity, f.filled_at AS occurred_at
+    FROM demo_order o JOIN fill f ON f.order_id = o.id WHERE o.actor_id = #{actorId}
+  </select>
+</mapper>

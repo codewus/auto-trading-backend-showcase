@@ -1,0 +1,4 @@
+# Both database and API use only the local synthetic demo environment.
+spring:
+  main:
+    banner-mode: off

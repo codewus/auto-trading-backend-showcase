@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'org.springframework.boot' version '4.0.8'
+}
+
+group = 'com.codewus.showcase'
+version = '1.0.0'
+
+java { toolchain { languageVersion = JavaLanguageVersion.of(17) } }
+repositories { mavenCentral() }
+
+dependencies {
+    implementation platform('org.springframework.boot:spring-boot-dependencies:4.0.8')
+    implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+    implementation 'org.springframework.boot:spring-boot-starter-validation'
+    implementation 'org.springframework.boot:spring-boot-starter-flyway'
+    implementation 'org.mybatis.spring.boot:mybatis-spring-boot-starter:4.0.1'
+    implementation 'org.flywaydb:flyway-database-postgresql'
+    runtimeOnly 'org.postgresql:postgresql'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+}
+
+sourceSets {
+    postgresTest {
+        java.srcDir 'src/postgresTest/java'
+        resources.srcDir 'src/postgresTest/resources'
+        compileClasspath += sourceSets.main.output
+        runtimeClasspath += sourceSets.main.output
+    }
+}
+configurations {
+    postgresTestImplementation.extendsFrom testImplementation
+    postgresTestRuntimeOnly.extendsFrom testRuntimeOnly
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+    options.compilerArgs += ['-parameters', '-Xlint:deprecation', '-Xlint:unchecked']
+}
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    testLogging { events 'failed', 'skipped'; exceptionFormat = 'full' }
+    afterSuite { descriptor, result ->
+        if (descriptor.parent == null) {
+            println("${name}: tests=${result.testCount}, failures=${result.failedTestCount}, skipped=${result.skippedTestCount}")
+            if (result.testCount == 0 || result.skippedTestCount > 0) {
+                throw new GradleException("${name} must execute tests without skips.")
+            }
+        }
+    }
+}
+tasks.register('postgresTest', Test) {
+    description = 'Runs real PostgreSQL tests; unavailable DB or skipped tests fail the task.'
+    group = 'verification'
+    testClassesDirs = sourceSets.postgresTest.output.classesDirs
+    classpath = sourceSets.postgresTest.runtimeClasspath
+    shouldRunAfter tasks.test
+    outputs.upToDateWhen { false }
+}

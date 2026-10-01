@@ -1,0 +1,27 @@
+spring:
+  application:
+    name: auto-trading-backend-showcase
+  profiles:
+    default: demo
+  jackson:
+    deserialization:
+      fail-on-unknown-properties: true
+  datasource:
+    url: jdbc:postgresql://localhost:${SHOWCASE_DB_PORT:15432}/showcase
+    username: showcase
+    hikari:
+      maximum-pool-size: 8
+  flyway:
+    enabled: true
+    clean-disabled: true
+server:
+  address: 127.0.0.1
+  port: ${SHOWCASE_PORT:18080}
+  error:
+    include-message: never
+    include-stacktrace: never
+mybatis:
+  mapper-locations: classpath:mapper/*.xml
+  configuration:
+    map-underscore-to-camel-case: true
+    arg-name-based-constructor-auto-mapping: true
